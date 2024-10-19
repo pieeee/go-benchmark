@@ -1,0 +1,25 @@
+# Use the official Python image as a base
+FROM python:3.9-slim
+
+# Set environment variables to ensure Python doesn't buffer stdout/stderr
+ENV PYTHONUNBUFFERED=1
+
+# Install necessary dependencies, including a C compiler (build-essential)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /locust
+
+# Copy the locustfile into the container
+COPY locustfile.py /locust/
+
+# Install Locust globally in the container
+RUN pip install --no-cache-dir locust
+
+# Expose the Locust web interface port
+EXPOSE 8089
+
+# Set the entrypoint to run Locust
+ENTRYPOINT ["locust", "-f", "/locust/locustfile.py"]

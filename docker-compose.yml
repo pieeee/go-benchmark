@@ -1,0 +1,23 @@
+version: '3'
+services:
+  redis-server:
+    image: "redis:alpine"
+    container_name: "redis-server"
+    ports:
+      - "6379:6379"
+  
+  benchmark-app:
+    build: .
+    container_name: "go-benchmark-app"
+    environment:
+      - GOMAXPROCS=2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-server
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"  # Limit to 50% of one CPU core
+          memory: "512M" # Limit memory to 512MB
+    command: ["benchmark-api"]  # Corrected to match the binary name
