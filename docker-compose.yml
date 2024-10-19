@@ -15,9 +15,13 @@ services:
       - "8080:8080"
     depends_on:
       - redis-server
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"  # Limit to 50% of one CPU core
-          memory: "512M" # Limit memory to 512MB
     command: ["benchmark-api"]  # Corrected to match the binary name
+
+  caddy:
+    image: "caddy:latest"
+    container_name: "caddy-server"
+    ports:
+      - "80:80"
+    depends_on:
+      - benchmark-app
+    command: ["caddy", "reverse-proxy", "--from", ":80", "--to", "benchmark-app:8080"]
